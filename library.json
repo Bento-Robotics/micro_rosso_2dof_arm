@@ -12,12 +12,12 @@
     }
   ],
   "dependencies": {
-    "xopxe/micro_rosso": "^0.1.0",
+    "xopxe/micro_rosso": "^0.1.0"
   },
   "examples": [
     {
       "name": "Basic",
-      "base": "examples/Basic",
+      "base": "examples",
       "files": ["main.cpp"]
     }
   ],
