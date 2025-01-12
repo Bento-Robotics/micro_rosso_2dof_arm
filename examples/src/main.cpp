@@ -12,6 +12,8 @@ SyncTime sync_time;
 RosStatus ros_status;
 
 #include "micro_rosso_battery_monitor.h"
+Basic_Battery basic_battery;
+
 
 void setup() {
   D_println("Booting...");
@@ -32,7 +34,12 @@ void setup() {
   if (!ros_status.setup())
     D_println("FAIL ros_status.setup()");
 
+  if (!basic_battery.setup(28, "/battery", ticker.timer_tick))
+    D_println("FAIL basic_battery.setup()");
+
   D_println("Boot completed.");
+
+
 }
 
 void loop() {

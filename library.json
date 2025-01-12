@@ -1,6 +1,6 @@
 {
   "name": "micro_rosso_basic_battery",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Basic battery status module for micro_rosso",
   "keywords": "ros, micro-ros, robot, micro_rosso, battery",
   "authors": [
@@ -16,11 +16,11 @@
   },
   "examples": [
     {
-      "name": "Basic",
+      "name": "Battery Monitor",
       "base": "examples",
       "files": ["main.cpp"]
     }
   ],
   "frameworks": "arduino",
-  "platforms": "espressif32"
+  "platforms": "espressif32, raspberrypi"
 }
