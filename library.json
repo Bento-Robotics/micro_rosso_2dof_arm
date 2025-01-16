@@ -1,8 +1,13 @@
 {
-  "name": "micro_rosso_basic_battery",
-  "version": "0.1.0",
-  "description": "Basic battery status module for micro_rosso",
-  "keywords": "ros, micro-ros, robot, micro_rosso, battery",
+  "name": "micro_rosso_2dof_arm",
+  "version": "0.0.1",
+  "description": "2 DOF robot arm module for micro_rosso",
+  "keywords": "ros, micro-ros, robot, micro_rosso, arm, servo",
+  "repository":
+  {
+    "type": "git",
+    "url": "https://github.com/Bento-Robotics/micro_rosso_2dof_arm.git"
+  },
   "authors": [
     {
       "name": "Samuel Pelz",
@@ -16,9 +21,9 @@
   },
   "examples": [
     {
-      "name": "Battery Monitor",
+      "name": "2 DOF arm",
       "base": "examples",
-      "files": ["main.cpp"]
+      "files": ["src/main.cpp"]
     }
   ],
   "frameworks": "arduino",
