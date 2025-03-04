@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<robot name="Bento-Box_Arm">
+  <link name="arm_elbow_servo">
+    <visual>
+      <geometry>
+        <box size="0.01 0.065 0.01"/>
+      </geometry>
+      <origin xyz="0 0 0"/>
+      <material name="servo"/>
+    </visual>
+  </link>
+
+  <link name="arm_elbow_link">
+    <visual>
+      <geometry>
+        <box size="0.255 0.065 0.025"/>
+      </geometry>
+      <origin xyz="0.1275 0 0.01"/>
+      <material name="plastic"/>
+    </visual>
+  </link>
+
+
+<joint name="arm_base_joint" type="revolute">
+  <axis xyz="0 1 0"/>
+  <limit effort="1000.0" lower="0.0" upper="3.7692" velocity="0.5"/>
+  <origin rpy="0 0 0" xyz="0 0 0.0"/>
+  <parent link="arm_base_servo"/>
+  <child link="arm_base_link"/>
+</joint>
+
+  <joint name="arm_base_link_to_elbow_servo" type="fixed">
+    <origin rpy="0 0 0" xyz="-0.155 0 0.03"/>
+    <parent link="arm_base_link"/>
+    <child link="arm_elbow_servo"/>
+  </joint>
+
+<joint name="arm_elbow_joint" type="revolute">
+  <axis xyz="0 1 0"/>
+  <limit effort="1000.0" lower="0" upper="-3.7692" velocity="0.5"/>
+  <origin rpy="0 0 0" xyz="0 0 0.0"/>
+  <parent link="arm_elbow_servo"/>
+  <child link="arm_elbow_link"/>
+</joint>
+
+</robot>
