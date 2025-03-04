@@ -15,6 +15,9 @@ RosStatus ros_status;
 #include "micro_rosso_2dof_arm.h"
 Two_DOF_Arm two_DOF_arm;
 
+Servo servo_top;
+Servo servo_bottom;
+
 void led_callback(int64_t last_call_time) {
   static bool status;
   digitalWrite(LED_BUILTIN, status);
@@ -24,22 +27,29 @@ void led_callback(int64_t last_call_time) {
 void setup() {
   D_println("Booting...");
 
-  Servo servo1;
-  Servo servo2;
   // DS3240 limits:  min: 400 , max: 2600
-  // Values constrained by monting position
-  servo1.attach(0, 900, 2600);
-  servo2.attach(1, 850, 2550);
-  //home arm
-  servo1.writeMicroseconds(2600);
-  servo2.writeMicroseconds(2550);
-
+  // Values constrained by mounting position
+  servo_top.attach(3, 850, 2530);//, PRECISE_SERVO_270deg);
+  servo_bottom.attach(2, 900, 2520);//, PRECISE_SERVO_270deg);
 
   pinMode(LED_BUILTIN, OUTPUT);
   D_print("Setting up transport... ");
   Serial.begin(115200);
   set_microros_serial_transports(Serial);
-
+  //
+  // while (true) {
+  //   for (float i = 0; i <= 180; i += 0.1) {
+  //     servo_bottom.write(i);
+  //     delay(5);
+  //     digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+  //   }
+  //   for (int i = 180; i >= 0; i--) {
+  //     servo_bottom.write(i);
+  //     delay(50);
+  //     digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+  //   }
+  // }
+  //
   if (!micro_rosso::setup("my_node_name"))
     D_println("FAIL micro_rosso.setup()");
 
@@ -53,8 +63,10 @@ void setup() {
   if (!ros_status.setup())
     D_println("FAIL ros_status.setup()");
 
-  //if (!two_DOF_arm.setup(servo1, servo2))
-  //  D_println("FAIL two_DOF_arm.setup()");
+  const uint32_t linkage_bottom_length_mm = 140;
+  const uint32_t linkage_top_length_mm = 250;
+  if (!two_DOF_arm.setup(&servo_top, &servo_bottom, linkage_bottom_length_mm, linkage_top_length_mm))
+    D_println("FAIL two_DOF_arm.setup()");
 
   D_println("Boot completed.");
 }
