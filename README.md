@@ -3,9 +3,7 @@
 This a module for the [micro_rosso](https://github.com/xopxe/micro_rosso_platformio) system.
 
 It provides support for a 2dof robotic arm using servos and ROS2.
-Currently very experimental stuff.
-TODO: fix joint states
-TODO: inverse kinematics kinda misbehaving
+Currently very experimental stuff.  
 TODO: use precise_servo
 
 ## Loading and starting

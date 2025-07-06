@@ -72,14 +72,13 @@ void Two_DOF_Arm::report_cb(int64_t last_call_time)
 {
   if (pdescriptor_joint_states.topic_name != 0 ) //TODO && last_reading != reading
   {
-    msg_joint_states.position.data[0] = _actual_angles[0];
-    msg_joint_states.position.data[1] = _actual_angles[1];
+    msg_joint_states.position.data = _actual_angles;
 
     micro_rosso::set_timestamp(msg_joint_states.header.stamp);
-    digitalWrite(LED_BUILTIN, RCL_RET_OK == rcl_publish(
+    rcl_publish(
       &pdescriptor_joint_states.publisher,
       &msg_joint_states,
-      NULL));
+      NULL);
 
   char string[50];
   sprintf(string, "joint state: 0: %d, 1: %d", msg_joint_states.position.data[0], msg_joint_states.position.data[1]);
@@ -140,13 +139,15 @@ void Two_DOF_Arm::home_srv_cb(const void *req, void *res) {
 // arm setup - initialize data and home arm
 Two_DOF_Arm::Two_DOF_Arm() {
   msg_joint_states.name.size = 2;
-  msg_joint_states.name.capacity= 2;
-  msg_joint_states.position.data = (double *) malloc(2 * sizeof(double));
+  msg_joint_states.name.capacity = (15 + 16) * sizeof(char) + 2 * sizeof(rosidl_runtime_c__String);
   msg_joint_states.position.size = 2;
-  msg_joint_states.position.capacity = 2;
+  msg_joint_states.position.capacity = 2 * sizeof(double);
 
+  static rosidl_runtime_c__String string_storage[2]; // allocate storage for String array. silly but works
+  msg_joint_states.name.data = (rosidl_runtime_c__String*) string_storage;
   msg_joint_states.name.data[0] = micro_ros_string_utilities_set(msg_joint_states.name.data[0], "arm_base_joint");
   msg_joint_states.name.data[1] = micro_ros_string_utilities_set(msg_joint_states.name.data[1], "arm_elbow_joint");
+
   // messages come pre-initialized, no need to initialize everything else
 };
 
