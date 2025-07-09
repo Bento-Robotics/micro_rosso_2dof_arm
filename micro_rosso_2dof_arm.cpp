@@ -1,7 +1,6 @@
 #include "micro_rosso_2dof_arm.h"
 #include "micro_rosso.h"
 #include "rcl/types.h"
-#include "rcl_interfaces/msg/log.h"
 #include "rmw/types.h"
 #include "rosidl_runtime_c/message_type_support_struct.h"
 #include <micro_ros_utilities/string_utilities.h>
@@ -9,7 +8,6 @@
 #include <geometry_msgs/msg/point.h>
 #include <sensor_msgs/msg/joint_state.h>
 #include <std_srvs/srv/trigger.h>
-#include <rcl_interfaces/msg/log.h>
 
 static subscriber_descriptor sdescriptor_arm_absolute_control;
 static subscriber_descriptor sdescriptor_arm_relative_control;
@@ -21,9 +19,6 @@ static sensor_msgs__msg__JointState msg_joint_states;
 static service_descriptor srvdescriptor_home_srv;
 std_srvs__srv__Trigger_Request home_srv_request;
 std_srvs__srv__Trigger_Response home_srv_response;
-
-static publisher_descriptor pdescriptor_log;
-static rcl_interfaces__msg__Log msg_log;
 
 
 static Servo* _servo_top;
@@ -49,24 +44,6 @@ static uint _linkage_top_length;
   (void)temp_rc;                                                             \
 }
 
-void ros_log(char* string, uint log_level = rcl_interfaces__msg__Log__DEBUG) {
-  if (pdescriptor_log.topic_name != 0 && sizeof(string) != 0) //TODO && last_reading != reading
-  {
-    micro_rosso::set_timestamp(msg_log.stamp);
-    msg_log.level = log_level;
-    msg_log.name = micro_ros_string_utilities_set(msg_log.name, "micro_rosso_2dof_arm");
-    msg_log.msg = micro_ros_string_utilities_set(msg_log.msg, string);
-
-    RCNOCHECK(rcl_publish(
-      &pdescriptor_log.publisher,
-      &msg_log,
-      NULL));
-
-    // msg_log = ; // empty message
-  }
-
-}
-
 // arm state topic callback
 void Two_DOF_Arm::report_cb(int64_t last_call_time)
 {
@@ -79,10 +56,6 @@ void Two_DOF_Arm::report_cb(int64_t last_call_time)
       &pdescriptor_joint_states.publisher,
       &msg_joint_states,
       NULL);
-
-  char string[50];
-  sprintf(string, "joint state: 0: %d, 1: %d", msg_joint_states.position.data[0], msg_joint_states.position.data[1]);
-  ros_log(string);
   }
 }
 
@@ -93,9 +66,6 @@ void Two_DOF_Arm::absolute_control_cb(const void* msgin) {
     _goal_pos.x = ((geometry_msgs__msg__Point *)msgin)->x;
     _goal_pos.y = ((geometry_msgs__msg__Point *)msgin)->y;
   }
-  char string[50];
-  sprintf(string, "absolute_control: x: %f, y: %f", _goal_pos.x, _goal_pos.y);
-  ros_log(string);
 }
 
 void Two_DOF_Arm::relative_control_cb(const void* msgin) {
@@ -105,9 +75,6 @@ void Two_DOF_Arm::relative_control_cb(const void* msgin) {
     _goal_pos.x += ((geometry_msgs__msg__Point *)msgin)->x;
     _goal_pos.y += ((geometry_msgs__msg__Point *)msgin)->y;
   }
-  char string[50];
-  sprintf(string, "relative_control: x: %f, y: %f", _goal_pos.x, _goal_pos.y);
-  ros_log(string);
 }
 
 void Two_DOF_Arm::control_loop_cb(int64_t last_call_time) {
@@ -189,12 +156,6 @@ bool Two_DOF_Arm::setup(Servo *servo_bottom, Servo *servo_top,
     pdescriptor_joint_states.topic_name = "/joint_states";
     micro_rosso::publishers.push_back(&pdescriptor_joint_states);
 
-    pdescriptor_log.qos = QOS_DEFAULT; //TODO qos mismatch
-    pdescriptor_log.type_support =
-      (rosidl_message_type_support_t *)ROSIDL_GET_MSG_TYPE_SUPPORT(rcl_interfaces, msg, Log);
-    pdescriptor_log.topic_name = "/rosout";
-    micro_rosso::publishers.push_back(&pdescriptor_log);
-
     micro_rosso::timer_control.callbacks.push_back(control_loop_cb);
     micro_rosso::timer_report.callbacks.push_back(report_cb);
   }
@@ -231,10 +192,6 @@ void Two_DOF_Arm::move_arm_to(float x, float y) {
 
   _actual_angles[0] = angle_bottom;
   _actual_angles[1] = angle_top;
-
-  char string[50];
-  sprintf(string, "control: ϑ_top: %f, ϑ_bottom: %f", angle_top_deg, angle_bottom_deg);
-  ros_log(string);
 }
 
 void Two_DOF_Arm::home_arm() {
