@@ -1,6 +1,6 @@
 {
   "name": "micro_rosso_2dof_arm",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "2 DOF robot arm module for micro_rosso",
   "keywords": "ros, micro-ros, robot, micro_rosso, arm, servo",
   "repository":
